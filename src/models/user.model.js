@@ -1,5 +1,7 @@
-import { JsonWebTokenError } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
+import bcrypt from "bcrypt";
+
 
 const userSchema = new mongoose.Schema({
     watchHistory:[{
@@ -45,7 +47,7 @@ const userSchema = new mongoose.Schema({
 // userSchema.pre('save',()=>{})  this is wrong as arrow function doesnt have this keyword.and we need this keyowrd here.
 userSchema.pre('save', async function (next){
   if(!this.isModified('password'))return next()
-  this.password = bcrypt(this.password,10)
+  this.password = await bcrypt(this.password,10)
   next()
 })
 
@@ -54,7 +56,7 @@ userSchema.methods.isPasswordCorrect = async function(password){
 }
 
 userSchema.methods.generateAccessToken = function(){
-    JsonWebTokenError.sign(
+    jwt.sign(
         {
             _id:this._id,
             email:this.email,
