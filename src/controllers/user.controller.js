@@ -24,7 +24,7 @@ const registerUser = asyncHandler(async (req,res) => {
    if(email === "") throw new ApiError(400,"Please enter email");
    if(password === "") throw new ApiError(400,"Please enter password");
  
-   const existedUser = User.findOne({
+   const existedUser = await User.findOne({
     $or: [{ username } , { email }]
    })
    
@@ -39,7 +39,7 @@ const registerUser = asyncHandler(async (req,res) => {
     const avatar = await uploadOnCloudinary(avatarLocalPath)
     const coverImage = await uploadOnCloudinary(coverImageLocalPath)
 
-    if(avatar){
+    if(!avatar){
         throw new ApiError(400,'Avatar file is requried')
     }
     
@@ -60,7 +60,7 @@ const registerUser = asyncHandler(async (req,res) => {
         throw new ApiError(500,'Something went wrong while registering user')
     }
 
-    return res.status(201).json(ApiResponse(200,createdUser,"User registered Succesfully"));
+    return res.status(201).json(new ApiResponse(200,createdUser,"User registered Succesfully"));
 
 })
 

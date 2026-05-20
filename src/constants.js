@@ -1,2 +1,2 @@
-export const DB_NAME = "OurTube"
+export const DB_NAME = "MyTube"
 
