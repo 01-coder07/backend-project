@@ -18,6 +18,6 @@ router.route('/register').post(
     registerUser
 )
 
-
+router.route('/')
 
 export default router
