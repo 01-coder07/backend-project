@@ -4,6 +4,7 @@ import {User} from "../models/user.model.js";
 import {uploadOnCloudinary} from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import jwt from "jsonwebtoken"
+import mongoose from "mongoose"
 
 const generateAccessAndRefreshToken = async (userId) => {
   try {
@@ -101,10 +102,10 @@ const loginUser = asyncHandler(async (req,res) => {
         $or:[{username} , {email}]
     })
 
-   if(!user) return new ApiError(404,"Please register first");
+   if(!user) throw new ApiError(404,"Please register first");
    
    const isPasswordValid = await user.isPasswordCorrect(password)
-   if(!isPasswordValid) return new ApiError(404,'Invalid Password');
+   if(!isPasswordValid) throw new ApiError(404,'Invalid Password');
 
    const {accessToken , refreshToken } = await generateAccessAndRefreshToken(user._id);
 
@@ -127,7 +128,7 @@ const loginUser = asyncHandler(async (req,res) => {
 })
 
 const logoutUser = asyncHandler(async (req,res) => {
-    User.findByIdAndUpdate(req.user._id , 
+    await User.findByIdAndUpdate(req.user._id , 
         {
             $set:{
                 refreshToken:undefined
@@ -214,7 +215,7 @@ const changePassword = asyncHandler(async(req , res) => {
 const getCurrentUser = asyncHandler(async (req,res) => {
   return res
   .status(200)
-  .json(200,req.user,'Current user fetched Succesfully')
+  .json(ApiResponse(200,req.user,'Current user fetched Succesfully'))
 })
 
 const updateAccountDetails = asyncHandler(async (req,res) =>{
@@ -251,7 +252,7 @@ const updateUserAvatar = asyncHandler(async (req,res)=>{
          throw new ApiError(401,"Error while uploading on avatar")
     }
     //update avatar
-    User.findByIdAndUpdate(
+    await User.findByIdAndUpdate(
         req.user?._id,
         {
             $set:{
@@ -280,7 +281,7 @@ const updateUserCoverImage = asyncHandler(async(req,res)=>{
         throw new ApiError(400,'Error while uploading on image')
     }
 
-    User.findByIdAndUpdate(
+    await User.findByIdAndUpdate(
         req.user?._id,
         {
             $set:{
