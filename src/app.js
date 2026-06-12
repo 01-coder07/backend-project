@@ -17,9 +17,11 @@ app.use(cookieParser())
 
 // separtion of routes from abovee middlewares
 import userRoutes from './routes/user.routes.js';
-
 app.use('/api/v1/users',userRoutes)
 
+
+import likeRoutes from "./routes/like.routes.js";
+app.use('/api/v1/likes',likeRoutes)
 
 // http://localhost:8000/api/v1/users/register
 
