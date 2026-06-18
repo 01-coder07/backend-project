@@ -26,4 +26,34 @@ const toggleVideoLike  = asyncHandler(async (req , res) => {
 
 })
 
-export {toggleVideoLike};
+
+const toggleCommentLike = asyncHandler(async (req,res) =>{
+       
+    const commentId = req.params.commentId;
+    if(!commentId){
+        throw new ApiError(400,'No comment');
+    }
+    const user = req.user._id
+    if(!user){
+        throw new ApiError(401,'No user');
+    }
+    
+    const exisitingCommentLike = await Like.findOne({comment:commentId , likedBy:user})
+    if(!exisitingCommentLike){
+        await Like.create({
+            comment:commentId,
+            likedBy:user,
+        })
+        return res.
+        json(new ApiResponse(200,{},'Comment Liked Successfully'));
+    }
+    else{
+        await exisitingCommentLike.deleteOne();
+        return res.json(new ApiResponse(200,{},'Comment Unliked Successfully'));
+    }
+})
+
+
+export {toggleVideoLike,
+    toggleCommentLike,
+};
