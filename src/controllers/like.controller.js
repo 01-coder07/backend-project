@@ -69,7 +69,7 @@ const toggleTweetLike = asyncHandler(async (req,res) =>{
         await Like.create({
             tweet:tweetId,likedBy:user,
         })
-        return res.status(200).json(new ApiResponse(200,{tweet,likedBy},'Tweet Liked succesfully'));
+        return res.status(200).json(new ApiResponse(200,{tweetId,user},'Tweet Liked succesfully'));
     }
     else{
         await existingTweetLike.deleteOne();
