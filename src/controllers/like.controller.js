@@ -2,6 +2,7 @@ import { Like } from "../models/likes.model.js";
 import { ApiError  } from "../utils/ApiError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
+import { Video } from "../models/video.model.js";
 
 const toggleVideoLike  = asyncHandler(async (req , res) => {
     const videoId = req.params.videoId;
@@ -76,8 +77,16 @@ const toggleTweetLike = asyncHandler(async (req,res) =>{
         return res.status(200).json(new ApiResponse(200,{},'Tweet Unliked'));
     }
 })
+const getLikedVideos = asyncHandler(async(req,res) =>{
+         const user = req.user?._id;
+         if(!user) throw new ApiError(404,'Invalid User')
+         const likedVideos = await Like.find({likedBy:user , video:{$exists:true}}).populate('video')
+        return res.status(200).json(new ApiResponse(200,likedVideos,'liked videos fetched'));
+})
+
 
 export {toggleVideoLike,
     toggleCommentLike,
     toggleTweetLike,
+    getLikedVideos,
 };
