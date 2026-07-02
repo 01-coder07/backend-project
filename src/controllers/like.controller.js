@@ -54,29 +54,7 @@ const toggleCommentLike = asyncHandler(async (req,res) =>{
     }
 })
 
-const toggleTweetLike = asyncHandler(async (req,res) =>{
-    const tweetId = req.params.tweet;
 
-    if(!tweetId){
-        throw new ApiError(402,"No Tweet");
-    }
-
-    const user = req.user?._id
-    if(!user)throw new ApiError(402,'Invalid User')
-    
-    // check if likedBy and tweet are in database
-    const existingTweetLike = await Like.findOne({tweet :tweetId , likedBy :user});
-    if(!existingTweetLike){
-        await Like.create({
-            tweet:tweetId,likedBy:user,
-        })
-        return res.status(200).json(new ApiResponse(200,{tweetId,user},'Tweet Liked succesfully'));
-    }
-    else{
-        await existingTweetLike.deleteOne();
-        return res.status(200).json(new ApiResponse(200,{},'Tweet Unliked'));
-    }
-})
 const getLikedVideos = asyncHandler(async(req,res) =>{
          const user = req.user?._id;
          if(!user) throw new ApiError(404,'Invalid User')
@@ -87,6 +65,5 @@ const getLikedVideos = asyncHandler(async(req,res) =>{
 
 export {toggleVideoLike,
     toggleCommentLike,
-    toggleTweetLike,
     getLikedVideos,
 };
