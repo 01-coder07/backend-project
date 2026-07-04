@@ -45,4 +45,14 @@ const uploadVideo = asyncHandler(async( req , res )=>{
    
 })
 
-export {uploadVideo}
+
+const getVideo = asyncHandler(async(req,res)=>{
+   const videoId = req.params.id;
+   if(!videoId) throw new ApiError(400,'no video exist')
+    const video = await Video.findById(videoId);
+   if(!video)throw new ApiError(400,'Video doesnt exist')
+
+   return res.json(new ApiResponse(200,video,"video fetched successfully"))
+})
+
+export {uploadVideo , getVideo}
