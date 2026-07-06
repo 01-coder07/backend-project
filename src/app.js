@@ -26,6 +26,10 @@ app.use('/api/v1/likes',likeRoutes)
 import videoRoutes from "./routes/video.routes.js";
 app.use('/api/v1/videos',videoRoutes)
 
+import commentRoutes from "./routes/comment.routes.js";
+app.use('/api/v1/videos',commentRoutes)
+
+
 // http://localhost:8000/api/v1/users/register
 
 
