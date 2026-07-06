@@ -55,4 +55,52 @@ const getVideo = asyncHandler(async(req,res)=>{
    return res.json(new ApiResponse(200,video,"video fetched successfully"))
 })
 
-export {uploadVideo , getVideo}
+const updateVideo = asyncHandler(async (req,res) =>{
+   const videoId = req.params.videoId;
+
+   const video = await Video.findById(videoId);
+   if(!video)throw new ApiError(400,'This video doesnt exist in database');
+
+   const user = req.user._id.toString();
+
+   if(video.owner.toString() !== user) throw new ApiError(404,'You are not authorised to update video');
+   const updateFields = {};
+   // first we wants  title , description , thumbnail
+   const { title , description } = req.body;
+   if(title) updateFields.title = title;
+   if(description) updateFields.description = description;
+   
+   const thumbnailLocalPath = req.file?.path;
+   if(thumbnailLocalPath) {
+    const thumbnail = await uploadOnCloudinary(thumbnailLocalPath)
+    updateFields.thumbnail = thumbnail.url
+   }
+   if(Object.keys(updateFields).length === 0) throw new ApiError(400,'No updating fields are required')
+   
+   // console.log(thumbnail.url)
+
+     const updatedVideoInDatabase = await Video.findByIdAndUpdate(
+      videoId, 
+     {$set: updateFields},
+     {new : true},
+     )
+
+     return res.json(new ApiResponse(200,updatedVideoInDatabase,'Video is successfully updated'));
+   
+})
+
+const deleteVideo = asyncHandler(async (req,res) =>{
+ 
+   const videoId = req.params.videoId;
+   const video = await Video.findById(videoId)
+   if(!video) throw new ApiError(400,'No video exist');
+
+   const owner = video.owner.toString();
+   const user = req.user._id.toString();
+   if(owner !== user) throw new ApiError(400,'You are not the owner');
+
+   await Video.findByIdAndDelete(video)
+   return res.json(new ApiResponse(200,{},'Video deleted successfully'));
+})
+
+export { uploadVideo , getVideo , updateVideo , deleteVideo }
