@@ -29,8 +29,11 @@ app.use('/api/v1/videos',videoRoutes)
 import commentRoutes from "./routes/comment.routes.js";
 app.use('/api/v1/videos',commentRoutes)
 
+import subscriptionRoutes from "./routes/subscription.routes.js";
+app.use('/api/v1/videos',subscriptionRoutes)
 
 // http://localhost:8000/api/v1/users/register
+
 
 
 export default app
