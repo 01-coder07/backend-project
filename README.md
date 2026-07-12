@@ -1,16 +1,24 @@
-# MyTube — YouTube-Inspired Backend API
+# MyTube — Video Platform REST API
 
-A full-featured REST API backend for a video-sharing platform, built with Node.js, Express, and MongoDB. Inspired by YouTube's core functionality — video uploads, user authentication, comments, likes, and subscriptions.
+A production-style REST API for a video-sharing platform, built with Node.js, Express, and MongoDB. Implements JWT authentication with refresh token rotation, cloud media storage, and MongoDB aggregation pipelines for relational-style queries (subscriber counts, watch history) on a NoSQL database.
+
+## Engineering Highlights
+
+- **Stateless auth with token rotation**: JWT access + refresh tokens, refresh token persisted and validated server-side to allow revocation — not just a simple sign-and-forget JWT setup
+- **Authorization at the resource level**: Update/delete operations verify the requesting user owns the resource before mutating it, rather than relying on route-level auth alone
+- **Relational queries on a document database**: Aggregation pipelines (`$lookup`, `$addFields`, `$project`) compute subscriber counts, subscription status, and populate nested owner data on watch history — the kind of joins that don't come naturally in MongoDB
+- **Idempotent toggle endpoints**: Likes and subscriptions use a single endpoint that checks existence and creates/deletes accordingly, avoiding separate like/unlike routes
+- **Multipart file handling pipeline**: Multer handles local temp storage, then streams to Cloudinary, with cleanup and validation at each step
+- **Centralized error/response contracts**: `ApiError` and `ApiResponse` classes standardize every endpoint's shape; `asyncHandler` removes repetitive try/catch boilerplate across controllers
 
 ## Features
 
-- **Authentication**: JWT-based auth with access & refresh token rotation, secure httpOnly cookies
-- **User Management**: Register, login, logout, password change, avatar & cover image uploads, watch history
-- **Videos**: Upload (with Cloudinary storage), fetch, update, delete — with ownership-based authorization
+- **Authentication**: Register, login, logout, password change
+- **Users**: Avatar & cover image uploads, channel profile with subscriber stats, watch history
+- **Videos**: Upload, fetch, update, delete
 - **Comments**: Full CRUD on video comments
-- **Likes**: Toggle-based like/unlike on videos
-- **Subscriptions**: Subscribe/unsubscribe to channels, view a channel's subscribers, view a user's subscribed channels
-- **Aggregation Pipelines**: Channel profile stats (subscriber count, subscribed-to count) and populated watch history using MongoDB's `$lookup`
+- **Likes**: Toggle like/unlike on videos
+- **Subscriptions**: Subscribe/unsubscribe, list a channel's subscribers, list a user's subscriptions
 
 ## Tech Stack
 
@@ -108,14 +116,15 @@ All routes are prefixed with `/api/v1`.
 ### Videos (`/videos`)
 | Method | Endpoint | Description | Auth |
 |---|---|---|---|
-| POST | `/upload` | Upload a new video (video file + thumbnail) | Yes |
-| GET | `/:id` | Get a single video | No |
-| PATCH | `/update/:videoId` | Update video details/thumbnail (owner only) | Yes |
-| DELETE | `/delete/:videoId` | Delete a video (owner only) | Yes |
+| POST | `/uploadVideo` | Upload a new video (video file + thumbnail) | Yes |
+| GET | `/video/:id` | Get a single video | No |
+| PATCH | `/video/update/:videoId` | Update video details/thumbnail (owner only) | Yes |
+| DELETE | `/video/delete/:videoId` | Delete a video (owner only) | Yes |
 
-### Comments, Likes & Subscriptions
-Similar CRUD/toggle patterns exist for comments and likes on videos, plus:
+### Comments & Likes
+Similar CRUD/toggle patterns exist for comments and likes on videos (see `comment.routes.js` and `like.routes.js`).
 
+### Subscriptions
 | Method | Endpoint | Description | Auth |
 |---|---|---|---|
 | POST | `/:channelId/subscribe` | Toggle subscribe/unsubscribe to a channel | Yes |
