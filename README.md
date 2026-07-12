@@ -110,8 +110,8 @@ All routes are prefixed with `/api/v1`.
 |---|---|---|---|
 | POST | `/upload` | Upload a new video (video file + thumbnail) | Yes |
 | GET | `/:id` | Get a single video | No |
-| PATCH | `/:videoId` | Update video details/thumbnail (owner only) | Yes |
-| DELETE | `/:videoId` | Delete a video (owner only) | Yes |
+| PATCH | `/update/:videoId` | Update video details/thumbnail (owner only) | Yes |
+| DELETE | `/delete/:videoId` | Delete a video (owner only) | Yes |
 
 ### Comments, Likes & Subscriptions
 Similar CRUD/toggle patterns exist for comments and likes on videos, plus:
@@ -120,7 +120,7 @@ Similar CRUD/toggle patterns exist for comments and likes on videos, plus:
 |---|---|---|---|
 | POST | `/:channelId/subscribe` | Toggle subscribe/unsubscribe to a channel | Yes |
 | GET | `/subscriptions/:id/userSubscribers` | Get all subscribers of a channel | Yes |
-| GET | `/subscriptions/:id/channels` | Get all channels a user is subscribed to | Yes |
+| GET | `/subscribed/:id` | Get all channels a user is subscribed to | Yes |
 
 ## Authentication Flow
 
