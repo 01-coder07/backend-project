@@ -147,7 +147,7 @@ Similar CRUD/toggle patterns exist for comments and likes on videos (see `commen
 
 ## Live Demo
 
-_Add your deployed URL here once hosted (e.g., Render)._
+will be added soon
 
 ## Author
 
